@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "CSV Locale FR"
+  },
+  "appShortName": {
+    "message": "CSV Locale"
+  },
+  "appDesc": {
+    "message": "Convertit les CSV téléchargés (séparateur, décimales, milliers, dates) vers les conventions régionales du poste. Traitement 100 % local."
+  },
+  "actionTitle": {
+    "message": "CSV Locale FR : réglages"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "appName": {
+    "message": "CSV Locale"
+  },
+  "appShortName": {
+    "message": "CSV Locale"
+  },
+  "appDesc": {
+    "message": "Converts downloaded CSV files (delimiter, decimals, thousands, dates) to this computer’s regional conventions. 100% local processing."
+  },
+  "actionTitle": {
+    "message": "CSV Locale: settings"
+  }
+}

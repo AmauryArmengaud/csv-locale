@@ -1,0 +1,19 @@
+{
+  "name": "csv-locale-fr",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension: converts downloaded CSV files to the local regional conventions",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "for f in $(find src -name '*.js'); do node --check $f || exit 1; done"
+  },
+  "license": "MIT",
+  "keywords": [
+    "chrome-extension",
+    "csv",
+    "excel",
+    "locale",
+    "oracle-apex"
+  ]
+}

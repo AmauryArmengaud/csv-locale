@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>App</title>
+<button id="blob">Export blob</button>
+<a id="http" href="/app/export.csv">Export http</a>
+<script>
+document.getElementById('blob').onclick = () => {
+  const csv = 'id,label,amount,date\n001,"Widget, large","1,234.50",03/15/2024\n002,Gadget,12.5,04/01/2024\n';
+  const url = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  const a = document.createElement('a'); a.href = url; a.download = 'report_blob.csv'; document.body.append(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);  // révocation immédiate, cas le plus hostile
+};
+</script>

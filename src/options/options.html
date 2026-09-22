@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="o.title">CSV Locale FR : réglages</title>
+  <link rel="stylesheet" href="options.css">
+  <script type="module" src="options.js"></script>
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <h1><span data-i18n="appName">CSV Locale FR</span> <span id="version" class="version"></span></h1>
+      <p class="lede" data-i18n="o.lede"></p>
+    </header>
+
+    <section class="preview" aria-labelledby="preview-title">
+      <h2 id="preview-title" class="visually-hidden" data-i18n="o.previewTitle"></h2>
+      <div class="preview-row">
+        <span class="preview-side" data-i18n="o.previewBefore"></span>
+        <code id="preview-before"></code>
+      </div>
+      <div class="preview-row is-after">
+        <span class="preview-side" data-i18n="o.previewAfter"></span>
+        <code id="preview-after"></code>
+      </div>
+    </section>
+
+    <section aria-labelledby="sites-title">
+      <h2 id="sites-title" data-i18n="o.sitesTitle"></h2>
+      <p class="hint" data-i18n="o.sitesHint"></p>
+      <form id="prefix-form" class="inline-form">
+        <label for="prefix-input" class="visually-hidden" data-i18n="o.prefixLabel"></label>
+        <input id="prefix-input" type="url" data-i18n-placeholder="o.prefixPlaceholder" autocomplete="off" required>
+        <button type="submit" data-i18n="o.addSite"></button>
+      </form>
+      <p id="prefix-error" class="error" role="alert" hidden></p>
+      <ul id="prefix-list" class="prefix-list"></ul>
+      <p id="hook-error" class="error" role="alert" hidden></p>
+      <p id="prefix-empty" class="empty" data-i18n="o.sitesEmpty"></p>
+    </section>
+
+    <section aria-labelledby="format-title">
+      <h2 id="format-title" data-i18n="o.formatTitle"></h2>
+      <fieldset class="mode">
+        <legend class="visually-hidden" data-i18n="o.mode"></legend>
+        <label><input type="radio" name="targetMode" value="auto"> <span data-i18n="o.modeAuto"></span> <span id="locale-name" class="muted"></span></label>
+        <label><input type="radio" name="targetMode" value="manual"> <span data-i18n="o.modeManual"></span></label>
+      </fieldset>
+
+      <div class="grid">
+        <label><span data-i18n="o.delimiter"></span>
+          <select id="delimiter">
+            <option value=";" data-i18n="o.delimSemicolon"></option>
+            <option value="," data-i18n="o.delimComma"></option>
+            <option value="&#9;" data-i18n="o.delimTab"></option>
+            <option value="|" data-i18n="o.delimPipe"></option>
+          </select>
+        </label>
+        <label><span data-i18n="o.decimal"></span>
+          <select id="decimal">
+            <option value="," data-i18n="o.decComma"></option>
+            <option value="." data-i18n="o.decPoint"></option>
+          </select>
+        </label>
+        <label><span data-i18n="o.dateFormat"></span>
+          <select id="dateFormat">
+            <option value="DD/MM/YYYY">31/12/2024</option>
+            <option value="YYYY-MM-DD">2024-12-31</option>
+            <option value="MM/DD/YYYY">12/31/2024</option>
+            <option value="DD.MM.YYYY">31.12.2024</option>
+            <option value="DD-MM-YYYY">31-12-2024</option>
+            <option value="YYYY/MM/DD">2024/12/31</option>
+          </select>
+        </label>
+        <label><span data-i18n="o.thousands"></span>
+          <select id="thousands">
+            <option value="" data-i18n="o.thNone"></option>
+            <option value="&#160;" data-i18n="o.thNbsp"></option>
+            <option value="&#8239;" data-i18n="o.thNnbsp"></option>
+            <option value=" " data-i18n="o.thSpace"></option>
+            <option value="." data-i18n="o.thPoint"></option>
+            <option value="," data-i18n="o.thComma"></option>
+            <option value="'" data-i18n="o.thApos"></option>
+          </select>
+        </label>
+      </div>
+      <p class="hint" data-i18n="o.thousandsHint"></p>
+    </section>
+
+    <section aria-labelledby="adv-title">
+      <h2 id="adv-title" data-i18n="o.advTitle"></h2>
+      <div class="grid">
+        <label><span data-i18n="o.ambiguous"></span>
+          <select id="ambiguousDateOrder">
+            <option value="auto" data-i18n="o.ambAuto"></option>
+            <option value="MDY" data-i18n="o.ambMDY"></option>
+            <option value="DMY" data-i18n="o.ambDMY"></option>
+          </select>
+        </label>
+        <label><span data-i18n="o.timezone"></span>
+          <select id="timezone">
+            <option value="local" data-i18n="o.tzLocal"></option>
+            <option value="wallclock" data-i18n="o.tzWall"></option>
+            <option value="skip" data-i18n="o.tzSkip"></option>
+          </select>
+        </label>
+        <label><span data-i18n="o.suffix"></span>
+          <input id="suffix" type="text" maxlength="30">
+        </label>
+        <label><span data-i18n="o.maxSize"></span>
+          <input id="maxSizeMB" type="number" min="1" max="500" step="1">
+        </label>
+      </div>
+      <div class="checks">
+        <label><input id="bom" type="checkbox"> <span data-i18n="o.bom"></span></label>
+        <label><input id="skipIfUnchanged" type="checkbox"> <span data-i18n="o.skipIfUnchanged"></span></label>
+        <label><input id="notify" type="checkbox"> <span data-i18n="o.notify"></span></label>
+      </div>
+      <p id="save-status" class="saved" aria-live="polite"></p>
+    </section>
+
+    <section aria-labelledby="test-title">
+      <h2 id="test-title" data-i18n="o.testTitle"></h2>
+      <p class="hint" data-i18n="o.testHint"></p>
+      <label class="file-pick">
+        <input id="test-file" type="file" accept=".csv,.tsv,.txt,text/csv">
+        <span data-i18n="o.testPick"></span>
+      </label>
+      <div id="test-result" hidden>
+        <p id="test-summary"></p>
+        <ul id="test-warnings" class="warnings"></ul>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th data-i18n="o.colColumn"></th><th data-i18n="o.colType"></th><th class="num" data-i18n="o.colChanged"></th></tr></thead>
+            <tbody id="test-columns"></tbody>
+          </table>
+        </div>
+        <a id="test-download" class="button" data-i18n="o.testDownload"></a>
+      </div>
+      <p id="test-error" class="error" role="alert" hidden></p>
+    </section>
+
+    <section aria-labelledby="history-title">
+      <div class="section-head">
+        <h2 id="history-title" data-i18n="o.historyTitle"></h2>
+        <button id="history-clear" type="button" class="quiet" data-i18n="o.historyClear"></button>
+      </div>
+      <ol id="history" class="history"></ol>
+      <p id="history-empty" class="empty" data-i18n="o.historyEmpty"></p>
+    </section>
+  </main>
+  <footer class="pied" aria-hidden="true">
+    <div class="hermine"></div>
+  </footer>
+</body>
+</html>

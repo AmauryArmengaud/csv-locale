@@ -1,0 +1,38 @@
+<!doctype html><meta charset="utf-8"><title>APEX simulé</title>
+<button id="location">location.href</button>
+<button id="redirect">apex.navigation.redirect</button>
+<button id="open">window.open</button>
+<button id="iframe-attr">iframe setAttribute</button>
+<button id="iframe-html">iframe HTML</button>
+<button id="iframe-jquery">iframe façon jQuery</button>
+<button id="form-blank">formulaire target _blank</button>
+<script>
+// Stub de l'API APEX, défini comme le ferait desktop_all.min.js
+window.apex = { navigation: { redirect: (url) => { location.href = url; } } };
+
+// Reproduit la séquence d'une grille interactive Oracle APEX :
+// 1. POST wwv_flow.ajax qui prépare le fichier et renvoie son id
+// 2. GET wwv_flow.ajax?...downloadFileId=... (fichier servi une seule fois), par différents mécanismes
+async function prepare() {
+  const res = await fetch('/apex/wwv_flow.ajax', { method: 'POST', body: 'p_flow_id=103&p_flow_step_id=66' });
+  const data = await res.json();
+  const pJson = JSON.stringify({ regions: [{ id: '48715', downloadFileId: data.regions[0].download.id }], salt: '7439' });
+  return '/apex/wwv_flow.ajax?p_flow_id=103&p_flow_step_id=66&p_instance=1&p_debug=&p_json=' + encodeURIComponent(pJson);
+}
+const modes = {
+  location: (u) => { location.href = u; },
+  redirect: (u) => apex.navigation.redirect(u),
+  open: (u) => { const w = window.open(u, '_blank'); if (w) w.focus(); },
+  'iframe-attr': (u) => { const f = document.createElement('iframe'); f.style.display = 'none'; f.setAttribute('src', u); document.body.appendChild(f); },
+  'iframe-html': (u) => { const d = document.createElement('div'); d.innerHTML = '<iframe style="display:none" src="' + u.replace(/"/g, '&quot;') + '"></iframe>'; document.body.appendChild(d); },
+  // jQuery : $('<iframe src=...>') construit un fragment détaché, puis appendChild
+  'iframe-jquery': (u) => { const tmp = document.createElement('div'); tmp.innerHTML = '<iframe style="display:none" src="' + u.replace(/"/g, '&quot;') + '"></iframe>'; document.body.appendChild(tmp.firstChild); },
+  'form-blank': (u) => {
+    const url = new URL(u, location.href); const f = document.createElement('form');
+    f.method = 'get'; f.action = url.pathname; f.target = '_blank';
+    for (const [k, v] of url.searchParams) { const i = document.createElement('input'); i.type = 'hidden'; i.name = k; i.value = v; f.appendChild(i); }
+    document.body.appendChild(f); f.submit();
+  },
+};
+for (const [id, fn] of Object.entries(modes)) document.getElementById(id).onclick = async () => fn(await prepare());
+</script>
