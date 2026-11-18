@@ -174,7 +174,8 @@ export function parseCsv(text, delimiter, { maxRows = Infinity, lenient = false 
   return { rows, lineEnding: dominantEol(eolCounts), trailingNewline, truncated };
 }
 
-function quoteIfNeeded(value, delimiter) {
+function quoteIfNeeded(value, delimiter, rawPattern) {
+  if (rawPattern && rawPattern.test(value)) return value;
   if (
     value.includes(delimiter) ||
     value.includes('"') ||
@@ -188,13 +189,15 @@ function quoteIfNeeded(value, delimiter) {
 
 /**
  * Sérialise des lignes en CSV (guillemets uniquement quand nécessaire).
+ * rawPattern : valeurs écrites telles quelles, sans guillemets ajoutés
+ * (utilisé pour la protection Excel ="00123", qui ne contient que des chiffres).
  */
-export function serializeCsv(rows, delimiter, { lineEnding = '\r\n', trailingNewline = true } = {}) {
+export function serializeCsv(rows, delimiter, { lineEnding = '\r\n', trailingNewline = true, rawPattern = null } = {}) {
   const lines = new Array(rows.length);
   for (let r = 0; r < rows.length; r++) {
     const row = rows[r];
     const cells = new Array(row.length);
-    for (let c = 0; c < row.length; c++) cells[c] = quoteIfNeeded(row[c], delimiter);
+    for (let c = 0; c < row.length; c++) cells[c] = quoteIfNeeded(row[c], delimiter, rawPattern);
     lines[r] = cells.join(delimiter);
   }
   let text = lines.join(lineEnding);

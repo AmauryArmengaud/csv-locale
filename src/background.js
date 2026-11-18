@@ -356,6 +356,7 @@ async function onComplete(id) {
       target,
       ambiguousDateOrder: settings.ambiguousDateOrder,
       timezone: settings.timezone,
+      protectLeadingZeros: settings.protectLeadingZeros,
     });
     const summary = describeReport(result.report);
 

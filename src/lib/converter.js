@@ -16,6 +16,12 @@ const NULL_TOKENS = new Set(['', 'na', 'n/a', 'null', 'none', 'nan', '-', '--', 
 const isNullToken = (v) => NULL_TOKENS.has(v.trim().toLowerCase());
 const isBlankRow = (row) => row.length === 1 && row[0] === '';
 
+// Valeurs entièrement numériques dont au moins une porte un zéro initial :
+// matricules, codes postaux, numéros de téléphone, IBAN tronqués.
+const DIGITS_ONLY = /^\d+$/;
+const LEADING_ZERO = /^0\d/;
+const EXCEL_TEXT = /^="\d+"$/;
+
 const VALID_DELIMITERS = new Set([',', ';', '\t', '|']);
 const VALID_DECIMALS = new Set([',', '.']);
 
@@ -41,7 +47,7 @@ export function assertTarget(target) {
  * @param {{target: {delimiter: string, decimal: string, thousands: string, dateFormat: string},
  *          ambiguousDateOrder?: 'auto'|'DMY'|'MDY', timezone?: 'local'|'wallclock'|'skip'}} options
  */
-export function convertCsvText(input, { target, ambiguousDateOrder = 'auto', timezone = 'local' }) {
+export function convertCsvText(input, { target, ambiguousDateOrder = 'auto', timezone = 'local', protectLeadingZeros = 'excel' }) {
   assertTarget(target);
 
   // Directive Excel "sep=," en première ligne
@@ -92,6 +98,9 @@ export function convertCsvText(input, { target, ambiguousDateOrder = 'auto', tim
       if (dateInfo) {
         col.type = 'date';
         col.date = dateInfo;
+      } else if (values.every((v) => DIGITS_ONLY.test(v.trim())) && values.some((v) => LEADING_ZERO.test(v.trim()))) {
+        // Excel lirait 00123 comme le nombre 123 : la colonne est écrite en texte.
+        col.type = 'code';
       } else if (values.every((v) => parseNumber(v) !== null)) {
         col.type = 'number';
       }
@@ -103,6 +112,14 @@ export function convertCsvText(input, { target, ambiguousDateOrder = 'auto', tim
   const outRows = rows.map((row) =>
     row.map((cell, c) => {
       const col = columns[c];
+      if (col.type === 'code') {
+        // Les chiffres ne changent jamais ; seule la forme peut être protégée.
+        if (protectLeadingZeros !== 'excel' || !DIGITS_ONLY.test(cell.trim())) return cell;
+        const converted = `="${cell.trim()}"`;
+        col.changedCells++;
+        changedCells++;
+        return converted;
+      }
       if (col.type !== 'number' && col.type !== 'date') return cell;
       if (isNullToken(cell)) return cell;
       let converted = null;
@@ -119,7 +136,7 @@ export function convertCsvText(input, { target, ambiguousDateOrder = 'auto', tim
     }),
   );
 
-  const body = serializeCsv(outRows, outDelimiter, { lineEnding, trailingNewline });
+  const body = serializeCsv(outRows, outDelimiter, { lineEnding, trailingNewline, rawPattern: EXCEL_TEXT });
   const output = (directive ? `sep=${outDelimiter}${lineEnding}` : '') + body;
 
   const warnings = [];
@@ -130,6 +147,8 @@ export function convertCsvText(input, { target, ambiguousDateOrder = 'auto', tim
       );
     }
   }
+  const protectedCols = columns.filter((c) => c.type === 'code' && c.changedCells).length;
+  if (protectedCols) warnings.push(t('warnProtectedCodes', { n: protectedCols, s: String(protectedCols) }));
   if (numberConv.inferred && columns.some((c) => c.type === 'number' && c.changedCells)) {
     warnings.push(t('warnInferredDecimal', { decimal: numberConv.decimal }));
   }

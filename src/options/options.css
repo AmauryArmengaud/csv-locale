@@ -120,7 +120,7 @@ table { width: 100%; border-collapse: collapse; background: var(--gwenn); font-s
 th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
 th { font-weight: 600; background: var(--noir); color: var(--gwenn); font-size: 13px; }
 .num { text-align: right; }
-.type-number, .type-date { color: var(--noir); font-weight: 700; }
+.type-number, .type-date, .type-code { color: var(--noir); font-weight: 700; }
 .type-text, .type-empty { color: var(--muted); }
 
 /* Historique */

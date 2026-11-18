@@ -27,6 +27,7 @@ Example with a US export converted for a French computer:
 | Date-time | `2024-03-15T14:05:09` | `15/03/2024 14:05:09` |
 | Oracle date | `28-FEB-25`, `28-FÉVR.-2025` | `28/02/2025` |
 | Oracle timestamp | `28-FEB-25 02.30.15.000000 PM` | `28/02/2025 14:30:15` |
+| Leading-zero code | `00123` | `="00123"` (read as text by Excel) |
 | Text containing `;` | `Paris; Lyon` | `"Paris; Lyon"` |
 | Encoding | UTF-8 or Windows-1252 | UTF-8 with BOM |
 
@@ -34,7 +35,7 @@ Safety rules:
 
 - **A column is only changed if 100% of its values** (excluding the header and null values such as `N/A`, `null`, `-`) share the same type. A mixed column is left untouched.
 - **No floating-point arithmetic**: digits are rewritten as text, with no loss of precision.
-- Integers without separators (IDs, employee numbers, `00123`) never change.
+- The digits of IDs and employee numbers never change. A fully numeric column where at least one value has a leading zero (`00123`, `0612345678`) is written as `="00123"`, which only Excel interprets, so it does not drop the zeros on opening. This can be turned off in the settings.
 - Dates are checked against the calendar (Feb 31 is rejected). Day/month order is inferred from values above 12; if the whole column is ambiguous, the hint comes from the export format (comma + point = US) or from the setting, and a warning is shown.
 - `1.2.3`, `10-A`, `20240301` are treated neither as numbers nor as dates.
 - The conversion is idempotent: a file already in the target format is not copied.
@@ -118,7 +119,7 @@ An extension has no access to the operating system's regional settings. The "Fol
 ## Tests
 
 ```bash
-npm test                      # 42 unit tests of the engine (Node 18+)
+npm test                      # 45 unit tests of the engine (Node 18+)
 npm run check                 # syntax check
 python tests/e2e/e2e.py       # end to end in Chromium (requires Playwright)
 ```

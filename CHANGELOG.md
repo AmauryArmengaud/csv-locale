@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.0
+- Leading-zero codes (employee numbers, postcodes, phone numbers) written as `="00123"` so Excel keeps them as text. Digits are never changed; the behaviour can be turned off in the settings.
+
 ## 1.3.0
 - Interface in French or English depending on the browser language (settings page, notifications, history, console messages, extension name).
 - Default suffix of the converted file: `_fr` in French, `_converted` in English.

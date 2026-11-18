@@ -14,6 +14,7 @@ export const ALLOWED = Object.freeze({
   dateFormat: ['DD/MM/YYYY', 'YYYY-MM-DD', 'MM/DD/YYYY', 'DD.MM.YYYY', 'DD-MM-YYYY', 'YYYY/MM/DD'],
   ambiguousDateOrder: ['auto', 'DMY', 'MDY'],
   timezone: ['local', 'wallclock', 'skip'],
+  protectLeadingZeros: ['excel', 'off'],
 });
 
 export const DEFAULT_SETTINGS = Object.freeze({
@@ -23,6 +24,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   thousands: '', // aucun : Excel relit "1234,5" sans ambiguïté
   ambiguousDateOrder: 'auto',
   timezone: 'local',
+  protectLeadingZeros: 'excel',
   bom: true,
   suffix: '_fr',
   notify: true,
@@ -64,6 +66,7 @@ export function normalizeSettings(raw) {
     thousands: pick(s.thousands, ALLOWED.thousands, d.thousands),
     ambiguousDateOrder: pick(s.ambiguousDateOrder, ALLOWED.ambiguousDateOrder, d.ambiguousDateOrder),
     timezone: pick(s.timezone, ALLOWED.timezone, d.timezone),
+    protectLeadingZeros: pick(s.protectLeadingZeros, ALLOWED.protectLeadingZeros, d.protectLeadingZeros),
     bom: typeof s.bom === 'boolean' ? s.bom : d.bom,
     suffix: suffix || defaultSuffix(),
     notify: typeof s.notify === 'boolean' ? s.notify : d.notify,

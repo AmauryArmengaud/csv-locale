@@ -32,7 +32,7 @@ Règles de sûreté :
 
 - **Une colonne n'est modifiée que si 100 % de ses valeurs** (hors en-tête et valeurs nulles `N/A`, `null`, `-`…) sont du même type. Une colonne mixte reste intacte.
 - **Aucun calcul flottant** : les chiffres sont réécrits comme du texte, zéro perte de précision.
-- Les entiers sans séparateur (identifiants, matricules, `00123`) ne changent jamais.
+- Les chiffres des identifiants et matricules ne changent jamais. Une colonne entièrement numérique dont au moins une valeur porte un zéro initial (`00123`, `0612345678`) est écrite sous la forme `="00123"`, que seul Excel interprète, pour qu'il ne supprime pas les zéros à l'ouverture. Réglage désactivable dans les options.
 - Les dates sont validées au calendrier (le 31/02 est rejeté). L'ordre jour/mois est déduit des valeurs > 12 ; si toute la colonne est ambiguë, l'indice vient du format de l'export (virgule + point = US) ou du réglage. Un avertissement est alors affiché.
 - `1.2.3`, `10-A`, `20240301` ne sont pris ni pour des nombres ni pour des dates.
 - La conversion est idempotente : un fichier déjà au format cible n'est pas recopié.
@@ -115,7 +115,7 @@ Une extension n'a pas accès aux paramètres régionaux de Windows. Le mode « S
 ## Tests
 
 ```bash
-npm test                      # 42 tests unitaires du moteur (Node 18+)
+npm test                      # 45 tests unitaires du moteur (Node 18+)
 npm run check                 # vérification syntaxique
 python tests/e2e/e2e.py       # bout en bout dans Chromium (requiert Playwright)
 ```
