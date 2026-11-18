@@ -14,7 +14,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 HERE = os.path.dirname(os.path.abspath(__file__))
 PORT = 8766
 EXPECTED = {
-    'blob': 'id;label;amount;date\n001;Widget, large;1234,50;15/03/2024\n002;Gadget;12,5;01/04/2024\n',
+    'blob': 'id;label;amount;date\n="001";Widget, large;1234,50;15/03/2024\n="002";Gadget;12,5;01/04/2024\n',
     'http': 'name;value;when\nalpha;12345,6;31/01/2024 10:00:00\nbeta;7,25;01/02/2024 11:30:00\n',
     # la colonne PERIODE contient une date impossible : elle reste intacte, par sécurité
 }

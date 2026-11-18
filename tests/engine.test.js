@@ -194,11 +194,31 @@ test('Oracle : colonne convertie, colonne avec une date invalide laissée intact
 test('cas nominal : export US vers Excel FR', () => {
   const src = 'id,label,amount,date\r\n001,"Widget, large","1,234.50",03/15/2024\r\n002,Gadget,12.5,04/01/2024\r\n';
   const { text, report } = conv(src);
-  assert.equal(text, 'id;label;amount;date\r\n001;Widget, large;1234,50;15/03/2024\r\n002;Gadget;12,5;01/04/2024\r\n');
+  assert.equal(text, 'id;label;amount;date\r\n="001";Widget, large;1234,50;15/03/2024\r\n="002";Gadget;12,5;01/04/2024\r\n');
   assert.equal(report.sourceDelimiter, ',');
-  assert.equal(report.columns[0].type, 'number');
-  assert.equal(report.columns[0].changedCells, 0, 'les identifiants ne bougent pas');
+  assert.equal(report.columns[0].type, 'code', 'les identifiants à zéros initiaux sont protégés');
   assert.equal(report.columns[2].changedCells, 2);
+});
+
+test('zéros initiaux : colonne écrite en texte pour Excel', () => {
+  const { text, report } = conv('matricule,nom,montant\n00123,Martin,1.5\n10456,Durand,2.5\n');
+  assert.equal(text, 'matricule;nom;montant\n="00123";Martin;1,5\n="10456";Durand;2,5\n');
+  assert.equal(report.columns[0].type, 'code');
+  assert.match(report.warnings[0], /zéros initiaux/);
+  // chiffres strictement conservés, y compris les numéros de téléphone
+  assert.equal(conv('tel\n0612345678\n0698765432\n').text, 'tel\n="0612345678"\n="0698765432"\n');
+});
+
+test('zéros initiaux : protection désactivable, et jamais appliquée sans zéro initial', () => {
+  assert.equal(conv('m\n00123\n', { protectLeadingZeros: 'off' }).text, 'm\n00123\n');
+  assert.equal(conv('id\n1\n22\n').text, 'id\n1\n22\n');
+  assert.equal(conv('v\n0.50\n0.75\n').text, 'v\n0,50\n0,75\n');
+});
+
+test('zéros initiaux : conversion idempotente', () => {
+  const once = conv('m\n00123\n00456\n').text;
+  assert.equal(once, 'm\n="00123"\n="00456"\n');
+  assert.equal(conv(once).unchanged, true);
 });
 
 test('colonne mixte laissée intacte', () => {

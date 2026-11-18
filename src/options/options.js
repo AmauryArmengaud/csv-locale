@@ -16,7 +16,7 @@ const $ = (id) => document.getElementById(id);
 const conventions = localeConventions();
 let settings = await loadSettings();
 
-const FIELDS = ['ambiguousDateOrder', 'timezone', 'suffix', 'maxSizeMB', 'bom', 'skipIfUnchanged', 'notify', 'thousands'];
+const FIELDS = ['ambiguousDateOrder', 'timezone', 'protectLeadingZeros', 'suffix', 'maxSizeMB', 'bom', 'skipIfUnchanged', 'notify', 'thousands'];
 const TARGET_FIELDS = ['delimiter', 'decimal', 'dateFormat'];
 
 /* ------------------------------ Enregistrement ------------------------------ */
@@ -174,7 +174,7 @@ for (const f of [...TARGET_FIELDS, ...FIELDS]) {
 
 /* --------------------------------- Aperçu ---------------------------------- */
 
-const SAMPLE = 'montant,date,ville\n"1,234.56",03/15/2024,"Lyon; Paris"\n';
+const SAMPLE = 'matricule,montant,date,ville\n00123,"1,234.56",03/15/2024,"Lyon; Paris"\n';
 
 function renderCells(code, cells, delimiter) {
   code.replaceChildren();
@@ -194,7 +194,7 @@ function renderPreview() {
   renderCells($('preview-before'), parseCsv(SAMPLE, ',').rows[1], ',');
   try {
     const target = resolveTarget(settings, conventions);
-    const { text, report } = convertCsvText(SAMPLE, { target, ambiguousDateOrder: settings.ambiguousDateOrder, timezone: settings.timezone });
+    const { text, report } = convertCsvText(SAMPLE, { target, ambiguousDateOrder: settings.ambiguousDateOrder, timezone: settings.timezone, protectLeadingZeros: settings.protectLeadingZeros });
     renderCells($('preview-after'), parseCsv(text, report.outDelimiter).rows[1], report.outDelimiter);
   } catch (e) {
     $('preview-after').textContent = t('o.previewError', { message: e.message });
@@ -203,7 +203,7 @@ function renderPreview() {
 
 /* ------------------------------ Test de fichier ----------------------------- */
 
-const TYPE_KEY = { number: 'o.typeNumber', date: 'o.typeDate', text: 'o.typeText', empty: 'o.typeEmpty' };
+const TYPE_KEY = { number: 'o.typeNumber', date: 'o.typeDate', code: 'o.typeCode', text: 'o.typeText', empty: 'o.typeEmpty' };
 let testUrl = null;
 
 $('test-file').addEventListener('change', async () => {
@@ -218,6 +218,7 @@ $('test-file').addEventListener('change', async () => {
       target: resolveTarget(settings, conventions),
       ambiguousDateOrder: settings.ambiguousDateOrder,
       timezone: settings.timezone,
+      protectLeadingZeros: settings.protectLeadingZeros,
     });
 
     $('test-summary').textContent = unchanged ? t('o.testUnchanged') : `${describeReport(report)}.`;
